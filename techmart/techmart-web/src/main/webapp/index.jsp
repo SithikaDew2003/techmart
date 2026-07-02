@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="lk.sithikaDev.techmart.entity.Users" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -91,32 +92,66 @@
 </head>
 <body>
 
+<%
+    Users user = (Users) session.getAttribute("user");
+%>
+
 <nav class="navbar navbar-expand-lg sticky-top">
     <div class="container">
-        <a class="navbar-brand" href="#">TECHMART</a>
+        <a class="navbar-brand" href="index.jsp">TECHMART</a>
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav align-items-center">
                 <li class="nav-item">
-                    <a class="nav-link text-light me-3" href="login.jsp">Log In</a>
+                    <a class="nav-link text-light me-3" href="shop">Shop</a>
                 </li>
-                <li class="nav-item">
-                    <a class="btn btn-primary-custom" href="signup.jsp">Sign Up</a>
-                </li>
+                <% if (user != null) { %>
+                    <li class="nav-item">
+                        <a class="nav-link text-light me-3" href="dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light me-3" href="cart"><i class="bi bi-cart3"></i> Cart</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-warning" href="#" role="button" data-bs-toggle="dropdown">
+                            Hi, <%= user.getFirstName() %>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            <li><a class="dropdown-item" href="logout">Logout</a></li>
+                        </ul>
+                    </li>
+                <% } else { %>
+                    <li class="nav-item">
+                        <a class="nav-link text-light me-3" href="login.jsp">Log In</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary-custom" href="signup.jsp">Sign Up</a>
+                    </li>
+                <% } %>
             </ul>
         </div>
     </div>
 </nav>
 
 <main class="container">
+    <% if(request.getParameter("success") != null) { %>
+        <div class="alert alert-success mt-4 alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <%= request.getParameter("success") %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
     <section class="hero-section">
         <h1 class="hero-title">Techmart</h1>
         <p class="hero-subtitle">Discover the latest in technology. Your one-stop shop for premium gadgets, components, and electronics.</p>
         <div class="d-flex justify-content-center gap-3">
-            <a href="signup.jsp" class="btn btn-primary-custom btn-lg">Get Started</a>
-            <a href="#" class="btn btn-outline-custom btn-lg">Explore Shop</a>
+            <a href="shop" class="btn btn-primary-custom btn-lg">Shop Now</a>
+            <% if (user == null) { %>
+                <a href="signup.jsp" class="btn btn-outline-custom btn-lg">Join Us</a>
+            <% } %>
         </div>
     </section>
 </main>

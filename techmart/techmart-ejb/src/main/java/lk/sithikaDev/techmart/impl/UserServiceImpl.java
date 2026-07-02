@@ -24,4 +24,16 @@ public class UserServiceImpl implements UserService {
                 .getSingleResult();
         return count > 0;
     }
+
+    @Override
+    public Users login(String email, String password) {
+        try {
+            return entityManager.createQuery("SELECT u FROM Users u WHERE LOWER(u.email) = LOWER(:email) AND u.password = :password", Users.class)
+                    .setParameter("email", email.toLowerCase())
+                    .setParameter("password", password)
+                    .getSingleResult();
+        } catch (jakarta.persistence.NoResultException e) {
+            return null;
+        }
+    }
 }

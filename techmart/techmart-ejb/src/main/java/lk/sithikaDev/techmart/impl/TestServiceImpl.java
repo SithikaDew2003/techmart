@@ -8,6 +8,6 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public void test(String hello) {
-        System.out.println(hello);
+        System.out.println("Test service called with: " + hello);
     }
 }

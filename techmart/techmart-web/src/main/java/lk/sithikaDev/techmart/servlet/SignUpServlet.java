@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lk.sithikaDev.techmart.entity.UserType;
 import lk.sithikaDev.techmart.entity.Users;
+import lk.sithikaDev.techmart.service.PerformanceMonitor;
 import lk.sithikaDev.techmart.service.UserService;
 
 import java.io.IOException;
@@ -18,8 +19,12 @@ public class SignUpServlet extends HttpServlet {
     @EJB
     private UserService userService;
 
+    @EJB
+    private PerformanceMonitor performanceMonitor;
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        performanceMonitor.incrementRequestCount("/signup");
         request.getRequestDispatcher("signup.jsp").forward(request, response);
     }
 

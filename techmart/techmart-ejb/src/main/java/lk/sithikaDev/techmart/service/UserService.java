@@ -7,4 +7,5 @@ import lk.sithikaDev.techmart.entity.Users;
 public interface UserService {
     void signUp(Users user);
     boolean isEmailExists(String email);
+    Users login(String email, String password);
 }
