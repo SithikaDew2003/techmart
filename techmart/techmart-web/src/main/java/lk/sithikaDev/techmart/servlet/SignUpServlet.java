@@ -86,7 +86,7 @@ public class SignUpServlet extends HttpServlet {
 
         try {
             userService.signUp(user);
-            response.sendRedirect("index.jsp?success=Signup successful");
+            response.sendRedirect("home?success=Signup successful");
         } catch (Exception e) {
             request.setAttribute("error", "Error during signup: " + e.getMessage());
             request.getRequestDispatcher("signup.jsp").forward(request, response);
