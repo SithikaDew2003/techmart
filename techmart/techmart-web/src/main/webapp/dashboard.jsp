@@ -71,14 +71,18 @@
 
     <div class="row mb-4">
         <div class="col-md-4">
-            <div class="card p-4 text-center">
-                <div class="text-dim mb-2 uppercase">Total Request Volume</div>
+            <div class="card p-4 text-center mb-3">
+                <div class="text-dim mb-2 uppercase">Total Requests</div>
                 <div class="stat-value"><%= request.getAttribute("totalRequests") %></div>
-                <div class="small text-success mt-2"><i class="bi bi-graph-up"></i> Real-time tracking enabled</div>
+            </div>
+            <div class="card p-4 text-center">
+                <div class="text-dim mb-2 uppercase">Active Sessions</div>
+                <div class="stat-value"><%= request.getAttribute("activeSessions") %></div>
+                <div class="small text-info mt-2"><i class="bi bi-people"></i> Scalable session tracking</div>
             </div>
         </div>
         <div class="col-md-8">
-            <div class="card p-4">
+            <div class="card p-4 h-100">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0">Endpoint Traffic Analysis (Singleton EJB)</h5>
                     <form action="dashboard" method="post">
@@ -147,6 +151,11 @@
                     <li><strong>Asynchronous:</strong> Critical for NFRs, preventing UI lag during intensive processing.</li>
                     <li><strong>MDB:</strong> Enables decoupled messaging via <code>OrderQueue</code> for peak load handling.</li>
                 </ul>
+                <div class="mt-3">
+                    <a href="init-data" target="_blank" class="btn btn-outline-warning btn-sm w-100">
+                        <i class="bi bi-database-fill-add"></i> Initialize System Sample Data
+                    </a>
+                </div>
             </div>
         </div>
     </div>

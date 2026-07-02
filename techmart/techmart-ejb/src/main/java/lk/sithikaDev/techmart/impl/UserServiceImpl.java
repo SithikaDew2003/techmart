@@ -36,4 +36,22 @@ public class UserServiceImpl implements UserService {
             return null;
         }
     }
+
+    @Override
+    public java.util.List<Users> getAllUsers() {
+        return entityManager.createQuery("SELECT u FROM Users u", Users.class).getResultList();
+    }
+
+    @Override
+    public void updateUser(Users user) {
+        entityManager.merge(user);
+    }
+
+    @Override
+    public void deleteUser(Integer userId) {
+        Users user = entityManager.find(Users.class, userId);
+        if (user != null) {
+            entityManager.remove(user);
+        }
+    }
 }

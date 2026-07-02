@@ -56,4 +56,11 @@ public class PerformanceMonitorImpl implements PerformanceMonitor {
         requestCounts.clear();
         totalRequests.set(0);
     }
+
+    @Override
+    @Lock(LockType.READ)
+    public long getActiveSessions() {
+        // Mock session count for demonstration
+        return totalRequests.get() / 5 + 1; 
+    }
 }

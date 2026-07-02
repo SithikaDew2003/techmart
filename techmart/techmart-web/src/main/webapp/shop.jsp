@@ -89,8 +89,12 @@
         %>
         <div class="col-12 col-md-6 col-lg-3">
             <div class="product-card p-3 d-flex flex-column">
-                <div class="mb-3 bg-secondary bg-opacity-10 rounded d-flex align-items-center justify-content-center" style="height: 150px;">
-                    <i class="bi bi-cpu text-warning fs-1"></i>
+                <div class="mb-3 bg-secondary bg-opacity-10 rounded d-flex align-items-center justify-content-center" style="height: 150px; overflow: hidden;">
+                    <% if (p.getImagePath() != null && !p.getImagePath().isEmpty()) { %>
+                        <img src="<%= p.getImagePath() %>" alt="<%= p.getName() %>" style="width: 100%; height: 100%; object-fit: cover;">
+                    <% } else { %>
+                        <i class="bi bi-cpu text-warning fs-1"></i>
+                    <% } %>
                 </div>
                 <h5 class="product-name"><%= p.getName() %></h5>
                 <p class="text-dim small flex-grow-1"><%= p.getDescription() %></p>

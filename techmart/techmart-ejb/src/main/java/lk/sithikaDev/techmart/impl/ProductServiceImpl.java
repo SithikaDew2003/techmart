@@ -30,6 +30,19 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public void updateProduct(Product product) {
+        entityManager.merge(product);
+    }
+
+    @Override
+    public void deleteProduct(Integer productId) {
+        Product product = getProductById(productId);
+        if (product != null) {
+            entityManager.remove(product);
+        }
+    }
+
+    @Override
     public void updateStock(Integer productId, Integer quantity) {
         Product product = getProductById(productId);
         if (product != null) {

@@ -1,12 +1,13 @@
 package lk.sithikaDev.techmart.service;
 
-import jakarta.ejb.Remote;
+import jakarta.ejb.Local;
 import java.util.Map;
 
-@Remote
+@Local
 public interface PerformanceMonitor {
     void incrementRequestCount(String path);
     Map<String, Long> getRequestStatistics();
     long getTotalRequests();
+    long getActiveSessions();
     void resetStatistics();
 }

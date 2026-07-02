@@ -130,6 +130,9 @@
                         <a class="btn btn-primary-custom" href="signup.jsp">Sign Up</a>
                     </li>
                 <% } %>
+                <li class="nav-item ms-lg-3">
+                    <a class="nav-link text-white-50 small" href="admin-login"><i class="bi bi-shield-lock"></i> Admin</a>
+                </li>
             </ul>
         </div>
     </div>

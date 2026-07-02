@@ -1,8 +1,8 @@
 package lk.sithikaDev.techmart.service;
 
-import jakarta.ejb.Remote;
+import jakarta.ejb.Local;
 
-@Remote
+@Local
 public interface TestService {
     void test(String hello);
 }

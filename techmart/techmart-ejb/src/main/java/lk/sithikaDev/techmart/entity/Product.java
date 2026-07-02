@@ -15,6 +15,7 @@ public class Product implements Serializable {
     private String description;
     private BigDecimal price;
     private Integer stockQuantity;
+    private String imagePath;
 
     public Integer getId() {
         return id;
@@ -54,5 +55,13 @@ public class Product implements Serializable {
 
     public void setStockQuantity(Integer stockQuantity) {
         this.stockQuantity = stockQuantity;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 }

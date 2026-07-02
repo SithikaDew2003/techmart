@@ -1,9 +1,9 @@
 package lk.sithikaDev.techmart.service;
 
-import jakarta.ejb.Remote;
+import jakarta.ejb.Local;
 import java.util.Map;
 
-@Remote
+@Local
 public interface CartService {
     void addItem(Integer productId, Integer quantity);
     void removeItem(Integer productId);

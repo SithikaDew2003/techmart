@@ -32,6 +32,7 @@ public class DashboardServlet extends HttpServlet {
 
         request.setAttribute("stats", stats);
         request.setAttribute("totalRequests", totalRequests);
+        request.setAttribute("activeSessions", performanceMonitor.getActiveSessions());
 
         request.getRequestDispatcher("dashboard.jsp").forward(request, response);
     }
