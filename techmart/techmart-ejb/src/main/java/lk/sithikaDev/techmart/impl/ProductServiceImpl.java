@@ -50,4 +50,15 @@ public class ProductServiceImpl implements ProductService {
             entityManager.merge(product);
         }
     }
+
+    @Override
+    public List<Product> searchProducts(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return getAllProducts();
+        }
+        return entityManager.createQuery(
+                "SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(:query) OR LOWER(p.description) LIKE LOWER(:query)",
+                Product.class
+        ).setParameter("query", "%" + query.trim().toLowerCase() + "%").getResultList();
+    }
 }

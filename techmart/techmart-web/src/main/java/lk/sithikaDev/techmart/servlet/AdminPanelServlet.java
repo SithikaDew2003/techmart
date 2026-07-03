@@ -5,8 +5,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+import lk.sithikaDev.techmart.entity.Order;
 import lk.sithikaDev.techmart.entity.Product;
 import lk.sithikaDev.techmart.entity.Users;
+import lk.sithikaDev.techmart.service.OrderService;
 import lk.sithikaDev.techmart.service.ProductService;
 import lk.sithikaDev.techmart.service.UserService;
 
@@ -34,6 +36,12 @@ public class AdminPanelServlet extends HttpServlet {
     @EJB
     private UserService userService;
 
+    @EJB
+    private lk.sithikaDev.techmart.service.NotificationService notificationService;
+
+    @EJB
+    private OrderService orderService;
+
     private static final String UPLOAD_DIR = "uploads";
 
     @Override
@@ -58,9 +66,11 @@ public class AdminPanelServlet extends HttpServlet {
 
         List<Product> products = productService.getAllProducts();
         List<Users> users = userService.getAllUsers();
+        List<Order> orders = orderService.getAllOrders();
 
         request.setAttribute("products", products);
         request.setAttribute("users", users);
+        request.setAttribute("orders", orders);
         request.getRequestDispatcher("admin-panel.jsp").forward(request, response);
     }
 
@@ -112,6 +122,66 @@ public class AdminPanelServlet extends HttpServlet {
             product.setImagePath(imagePath);
 
             productService.addProduct(product);
+
+            // Notify customers asynchronously of new product arrival
+            if (notificationService != null) {
+                List<Users> allUsers = userService.getAllUsers();
+                for (Users u : allUsers) {
+                    if (u.getUserType() != null && "CUSTOMER".equals(u.getUserType().toString())) {
+                        notificationService.sendNotification(
+                                String.valueOf(u.getId()),
+                                "New Arrival: '" + product.getName() + "' is now available in our store for $" + product.getPrice() + "!"
+                        );
+                    }
+                }
+            }
+        } else if ("editProduct".equals(action)) {
+            Integer id = Integer.parseInt(request.getParameter("id"));
+            String name = request.getParameter("name");
+            String description = request.getParameter("description");
+            BigDecimal price = new BigDecimal(request.getParameter("price"));
+            Integer stock = Integer.parseInt(request.getParameter("stock"));
+
+            Part filePart = request.getPart("image");
+            String fileName = getFileName(filePart);
+
+            Product product = productService.getProductById(id);
+            if (product != null) {
+                String oldName = product.getName();
+                
+                product.setName(name);
+                product.setDescription(description);
+                product.setPrice(price);
+                product.setStockQuantity(stock);
+
+                if (fileName != null && !fileName.isEmpty()) {
+                    String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
+                    File uploadDir = new File(uploadPath);
+                    if (!uploadDir.exists()) {
+                        uploadDir.mkdirs();
+                    }
+                    Path filePath = Paths.get(uploadPath, fileName);
+                    try (InputStream input = filePart.getInputStream()) {
+                        Files.copy(input, filePath, StandardCopyOption.REPLACE_EXISTING);
+                    }
+                    product.setImagePath(UPLOAD_DIR + "/" + fileName);
+                }
+
+                productService.updateProduct(product);
+
+                // Notify customers asynchronously of update
+                if (notificationService != null) {
+                    List<Users> allUsers = userService.getAllUsers();
+                    for (Users u : allUsers) {
+                        if (u.getUserType() != null && "CUSTOMER".equals(u.getUserType().toString())) {
+                            notificationService.sendNotification(
+                                    String.valueOf(u.getId()),
+                                    "Product Update: '" + oldName + "' details have been updated. New Price: $" + price
+                            );
+                        }
+                    }
+                }
+            }
         }
 
         response.sendRedirect("admin-panel");

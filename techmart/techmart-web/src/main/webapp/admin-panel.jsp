@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="lk.sithikaDev.techmart.entity.Order" %>
 <%@ page import="lk.sithikaDev.techmart.entity.Product" %>
 <%@ page import="lk.sithikaDev.techmart.entity.Users" %>
 <%@ page import="java.util.List" %>
@@ -45,6 +46,9 @@
             <li class="nav-item">
                 <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button">Manage Users</button>
             </li>
+            <li class="nav-item">
+                <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button">Purchase Orders</button>
+            </li>
         </ul>
 
         <div class="tab-content" id="adminTabsContent">
@@ -84,6 +88,9 @@
                                         <td>$<%= product.getPrice() %></td>
                                         <td><%= product.getStockQuantity() %></td>
                                         <td>
+                                            <button class="btn btn-warning btn-sm me-1" onclick="openEditModal(<%= product.getId() %>, '<%= product.getName().replace("'", "\\'") %>', '<%= product.getDescription() != null ? product.getDescription().replace("'", "\\'") : "" %>', <%= product.getPrice() %>, <%= product.getStockQuantity() %>)">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
                                             <a href="admin-panel?action=deleteProduct&id=<%= product.getId() %>" class="btn btn-danger btn-sm" onclick="return confirm('Delete this product?')">
                                                 <i class="bi bi-trash"></i>
                                             </a>
@@ -133,6 +140,54 @@
                                     </tr>
                                 <%
                                         }
+                                    }
+                                %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Tab -->
+            <div class="tab-pane fade" id="orders" role="tabpanel">
+                <h3>Customer Purchase Orders</h3>
+                <div class="card p-3">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer Name</th>
+                                    <th>Email</th>
+                                    <th>Items</th>
+                                    <th>Total Amount</th>
+                                    <th>Order Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <%
+                                    List<Order> orders = (List<Order>) request.getAttribute("orders");
+                                    if (orders != null && orders.size() > 0) {
+                                        for (Order order : orders) {
+                                %>
+                                    <tr>
+                                        <td><strong>#<%= order.getId() %></strong></td>
+                                        <td><%= order.getCustomerName() %></td>
+                                        <td><%= order.getCustomerEmail() %></td>
+                                        <td><small><%= order.getOrderItems() %></small></td>
+                                        <td><strong>$<%= order.getTotalAmount() %></strong></td>
+                                        <td><%= order.getOrderDate() %></td>
+                                        <td><span class="badge bg-info"><%= order.getOrderStatus() %></span></td>
+                                    </tr>
+                                <%
+                                        }
+                                    } else {
+                                %>
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">No orders yet</td>
+                                    </tr>
+                                <%
                                     }
                                 %>
                             </tbody>
@@ -190,6 +245,62 @@
         .border-gold { border: 1px solid var(--primary-gold); }
         .text-gold { color: var(--primary-gold); }
     </style>
+
+    <!-- Edit Product Modal -->
+    <div class="modal fade" id="editProductModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border-gold">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-gold">Edit Product</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="admin-panel" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="editProduct">
+                    <input type="hidden" id="editProductId" name="id">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Product Name</label>
+                            <input type="text" id="editProductName" name="name" class="form-control bg-secondary text-white border-0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea id="editProductDescription" name="description" class="form-control bg-secondary text-white border-0" rows="3"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Price ($)</label>
+                                <input type="number" step="0.01" id="editProductPrice" name="price" class="form-control bg-secondary text-white border-0" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Stock Quantity</label>
+                                <input type="number" id="editProductStock" name="stock" class="form-control bg-secondary text-white border-0" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Product Image (leave empty to keep current)</label>
+                            <input type="file" name="image" class="form-control bg-secondary text-white border-0" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="modal-footer border-secondary">
+                        <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-gold">Update Product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openEditModal(id, name, description, price, stock) {
+            document.getElementById('editProductId').value = id;
+            document.getElementById('editProductName').value = name;
+            document.getElementById('editProductDescription').value = description;
+            document.getElementById('editProductPrice').value = price;
+            document.getElementById('editProductStock').value = stock;
+            var editModal = new bootstrap.Modal(document.getElementById('editProductModal'));
+            editModal.show();
+        }
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

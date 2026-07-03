@@ -13,4 +13,5 @@ public interface ProductService {
     void updateProduct(Product product);
     void deleteProduct(Integer productId);
     void updateStock(Integer productId, Integer quantity);
+    List<Product> searchProducts(String query);
 }

@@ -147,6 +147,34 @@
             margin-top: 80px;
             background-color: rgba(0,0,0,0.3);
         }
+
+        .form-control-custom {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-main) !important;
+            padding: 12px 16px;
+            transition: all 0.2s;
+        }
+
+        .form-control-custom:focus {
+            background-color: rgba(255, 255, 255, 0.08) !important;
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 4px rgba(0, 210, 255, 0.1) !important;
+            color: var(--text-main) !important;
+        }
+
+        .input-group-text-custom {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid var(--border-color) !important;
+            border-right: none !important;
+            border-radius: 12px 0 0 12px !important;
+            color: var(--text-muted) !important;
+        }
+
+        .form-control-search {
+            border-left: none !important;
+            border-radius: 0 !important;
+        }
     </style>
 </head>
 <body>
@@ -191,8 +219,34 @@
         </div>
         
         <div class="col-lg-9">
+            <!-- Search Bar -->
+            <div class="mb-4">
+                <form action="shop" method="get">
+                    <div class="input-group">
+                        <span class="input-group-text input-group-text-custom">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" name="search" class="form-control form-control-custom form-control-search" placeholder="Search components (e.g. Laptop, Mouse...)" value="<%= request.getParameter("search") != null ? request.getParameter("search") : "" %>">
+                        <% if (request.getParameter("search") != null && !request.getParameter("search").trim().isEmpty()) { %>
+                            <a href="shop" class="btn btn-outline-secondary d-flex align-items-center px-3" style="border: 1px solid var(--border-color); border-left: none; border-right: none; border-radius: 0; color: var(--text-muted); font-size: 0.9rem;">
+                                Clear
+                            </a>
+                        <% } %>
+                        <button type="submit" class="btn text-black fw-bold px-4" style="background-color: var(--primary); border: 1px solid var(--primary); border-radius: 0 12px 12px 0; transition: background-color 0.2s;">
+                            Search
+                        </button>
+                    </div>
+                </form>
+            </div>
+
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="fw-bold mb-0">Products</h2>
+                <h2 class="fw-bold mb-0">
+                    <% if (request.getParameter("search") != null && !request.getParameter("search").trim().isEmpty()) { %>
+                        Search Results for "<%= request.getParameter("search") %>"
+                    <% } else { %>
+                        Products
+                    <% } %>
+                </h2>
                 <div class="dropdown">
                     <button class="btn btn-secondary btn-sm dropdown-toggle rounded-pill" type="button" data-bs-toggle="dropdown">
                         Sort by: Featured
@@ -240,10 +294,15 @@
                     } else {
                 %>
                 <div class="col-12 text-center py-5">
-                    <div class="bg-card p-5 rounded-4 border border-secondary border-opacity-10">
+                    <div class="p-5 rounded-4 border border-secondary border-opacity-10" style="background-color: var(--card-bg);">
                         <i class="bi bi-search fs-1 text-muted mb-3 d-block"></i>
-                        <p class="text-muted">No products available at the moment.</p>
-                        <a href="home" class="btn btn-primary mt-3">Back to Home</a>
+                        <% if (request.getParameter("search") != null && !request.getParameter("search").trim().isEmpty()) { %>
+                            <p class="text-muted">No products found matching "<%= request.getParameter("search") %>".</p>
+                            <a href="shop" class="btn btn-primary mt-3 text-black fw-bold" style="background-color: var(--primary); border: none;">Clear Search</a>
+                        <% } else { %>
+                            <p class="text-muted">No products available at the moment.</p>
+                            <a href="home" class="btn btn-primary mt-3 text-black fw-bold" style="background-color: var(--primary); border: none;">Back to Home</a>
+                        <% } %>
                     </div>
                 </div>
                 <%

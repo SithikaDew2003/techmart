@@ -6,12 +6,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lk.sithikaDev.techmart.entity.UserType;
 import lk.sithikaDev.techmart.entity.Users;
+import lk.sithikaDev.techmart.service.CartItemService;
 import lk.sithikaDev.techmart.service.PerformanceMonitor;
 import lk.sithikaDev.techmart.service.UserService;
 
 import java.io.IOException;
+import java.util.Map;
 
 @WebServlet(name = "SignUpServlet", value = "/signup")
 public class SignUpServlet extends HttpServlet {
@@ -21,6 +24,9 @@ public class SignUpServlet extends HttpServlet {
 
     @EJB
     private PerformanceMonitor performanceMonitor;
+
+    @EJB
+    private CartItemService cartItemService;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -86,6 +92,25 @@ public class SignUpServlet extends HttpServlet {
 
         try {
             userService.signUp(user);
+            
+            // Fetch the newly created user and set in session
+            Users newUser = userService.login(email, password);
+            if (newUser != null) {
+                HttpSession session = request.getSession();
+                session.setAttribute("user", newUser);
+                
+                // Transfer session cart to DB cart
+                Map<Integer, Integer> sessionCart = (Map<Integer, Integer>) session.getAttribute("cart");
+                if (sessionCart != null && !sessionCart.isEmpty()) {
+                    System.out.println("[SIGNUP SERVLET] Transferring session cart to DB for user: " + newUser.getId());
+                    for (Map.Entry<Integer, Integer> entry : sessionCart.entrySet()) {
+                        cartItemService.addCartItem(newUser.getId(), entry.getKey(), entry.getValue());
+                    }
+                    session.removeAttribute("cart");
+                    System.out.println("[SIGNUP SERVLET] Session cart transferred successfully");
+                }
+            }
+            
             response.sendRedirect("home?success=Signup successful");
         } catch (Exception e) {
             request.setAttribute("error", "Error during signup: " + e.getMessage());
@@ -93,3 +118,4 @@ public class SignUpServlet extends HttpServlet {
         }
     }
 }
+

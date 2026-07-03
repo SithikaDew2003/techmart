@@ -35,8 +35,8 @@ public class OrderProcessorMDB implements MessageListener {
                         if (kv.length == 2) {
                             Integer productId = Integer.parseInt(kv[0]);
                             Integer quantity = Integer.parseInt(kv[1]);
-                            System.out.println("[MDB] Syncing inventory for Product ID: " + productId + ", Quantity: " + quantity);
-                            productService.updateStock(productId, quantity);
+                            System.out.println("[MDB] Mocking real-time inventory synchronization across multiple warehouses for Product ID: " + productId + ", Quantity: " + quantity);
+                            // Note: Main inventory stock is reduced synchronously in CartServiceImpl.checkout() to ensure transaction safety and reliability.
                         }
                     }
                 }

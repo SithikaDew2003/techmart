@@ -1,27 +1,26 @@
 package lk.sithikaDev.techmart.impl;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
 import jakarta.annotation.Resource;
 import jakarta.ejb.EJB;
-import jakarta.ejb.Stateful;
-import jakarta.ejb.StatefulTimeout;
+import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.jms.JMSContext;
 import jakarta.jms.Queue;
+import lk.sithikaDev.techmart.entity.Order;
+import lk.sithikaDev.techmart.entity.Users;
 import lk.sithikaDev.techmart.service.CartService;
 import lk.sithikaDev.techmart.service.NotificationService;
+import lk.sithikaDev.techmart.service.OrderService;
+import lk.sithikaDev.techmart.service.ProductService;
+import lk.sithikaDev.techmart.service.UserService;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
-@Stateful
-@StatefulTimeout(value = 30, unit = TimeUnit.MINUTES)
+@Stateless
 public class CartServiceImpl implements CartService, Serializable {
-
-    private Map<Integer, Integer> cartItems;
 
     @Inject
     private JMSContext jmsContext;
@@ -32,33 +31,60 @@ public class CartServiceImpl implements CartService, Serializable {
     @EJB
     private NotificationService notificationService;
 
-    @PostConstruct
-    public void init() {
-        cartItems = new HashMap<>();
-        System.out.println("[CART SERVICE] Created for a new session.");
-    }
+    @EJB
+    private ProductService productService;
+
+    @EJB
+    private OrderService orderService;
+
+    @EJB
+    private UserService userService;
 
     @Override
-    public void addItem(Integer productId, Integer quantity) {
-        cartItems.put(productId, cartItems.getOrDefault(productId, 0) + quantity);
-    }
-
-    @Override
-    public void removeItem(Integer productId) {
-        cartItems.remove(productId);
-    }
-
-    @Override
-    public Map<Integer, Integer> getItems() {
-        return new HashMap<>(cartItems);
-    }
-
-    @Override
-    public void checkout() {
-        if (cartItems.isEmpty()) return;
+    public void checkout(Map<Integer, Integer> cartItems, Integer customerId) {
+        if (cartItems == null || cartItems.isEmpty()) return;
 
         String orderDetails = "Order: " + cartItems.toString();
         System.out.println("[CART SERVICE] Checking out items: " + cartItems);
+
+        // Get customer details
+        Users customer = userService.getAllUsers().stream()
+                .filter(u -> u.getId().equals(customerId))
+                .findFirst()
+                .orElse(null);
+
+        if (customer == null) {
+            System.err.println("[CART SERVICE] Customer not found");
+            return;
+        }
+
+        // Calculate total amount
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        for (Map.Entry<Integer, Integer> entry : cartItems.entrySet()) {
+            lk.sithikaDev.techmart.entity.Product product = productService.getProductById(entry.getKey());
+            if (product != null) {
+                totalAmount = totalAmount.add(product.getPrice().multiply(new BigDecimal(entry.getValue())));
+            }
+        }
+
+        // Create Order record
+        Order order = new Order();
+        order.setCustomerId(customerId);
+        order.setCustomerName(customer.getFirstName() + " " + customer.getLastName());
+        order.setCustomerEmail(customer.getEmail());
+        order.setOrderItems(cartItems.toString());
+        order.setTotalAmount(totalAmount);
+        order.setOrderDate(new Date());
+        order.setOrderStatus("PENDING");
+        orderService.createOrder(order);
+        System.out.println("[CART SERVICE] Order created with ID: " + order.getId());
+
+        // Reduce stock in database
+        if (productService != null) {
+            for (Map.Entry<Integer, Integer> entry : cartItems.entrySet()) {
+                productService.updateStock(entry.getKey(), entry.getValue());
+            }
+        }
         
         try {
             // Send message to OrderQueue for MDB to process
@@ -71,21 +97,19 @@ public class CartServiceImpl implements CartService, Serializable {
             System.err.println("[CART SERVICE] Error sending JMS message: " + e.getMessage());
         }
 
+        // Send purchase notification to admins asynchronously
+        if (notificationService != null) {
+            notificationService.sendPurchaseNotificationToAdmins(
+                    customer.getFirstName() + " " + customer.getLastName(),
+                    customer.getEmail(),
+                    cartItems,
+                    totalAmount
+            );
+        }
+
         // Asynchronous Notification (Requirement: Automated order processing with asynchronous notifications)
         if (notificationService != null) {
-            notificationService.sendOrderConfirmation("ORD-" + System.currentTimeMillis(), "customer@techmart.com");
+            notificationService.sendOrderConfirmation("ORD-" + System.currentTimeMillis(), customer.getEmail());
         }
-        
-        clearCart();
-    }
-
-    @Override
-    public void clearCart() {
-        cartItems.clear();
-    }
-
-    @PreDestroy
-    public void cleanup() {
-        System.out.println("[CART SERVICE] Destroying session cart.");
     }
 }

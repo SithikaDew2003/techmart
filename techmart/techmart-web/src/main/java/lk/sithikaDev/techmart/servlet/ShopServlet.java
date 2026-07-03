@@ -25,7 +25,13 @@ public class ShopServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         performanceMonitor.incrementRequestCount("/shop");
-        List<Product> products = productService.getAllProducts();
+        String searchQuery = request.getParameter("search");
+        List<Product> products;
+        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+            products = productService.searchProducts(searchQuery.trim());
+        } else {
+            products = productService.getAllProducts();
+        }
         request.setAttribute("products", products);
         request.getRequestDispatcher("shop.jsp").forward(request, response);
     }

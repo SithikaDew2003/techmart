@@ -35,6 +35,12 @@
             <type>war</type>
         </dependency>
 
+        <dependency>
+            <groupId>com.stripe</groupId>
+            <artifactId>stripe-java</artifactId>
+            <version>22.14.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -46,9 +52,10 @@
                 <version>3.3.0</version>
 
                 <configuration>
+                    <version>10</version>
+                    <defaultLibBundleDir>lib</defaultLibBundleDir>
 
                     <modules>
-
                         <ejbModule>
                             <groupId>lk.sithikaDev.techmart</groupId>
                             <artifactId>techmart-ejb</artifactId>
@@ -59,9 +66,7 @@
                             <artifactId>techmart-web</artifactId>
                             <contextRoot>/techmart</contextRoot>
                         </webModule>
-
                     </modules>
-
                 </configuration>
 
             </plugin>

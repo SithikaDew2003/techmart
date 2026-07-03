@@ -92,6 +92,18 @@
             background-color: var(--primary-dark);
             color: #000;
         }
+
+        a.btn-checkout {
+            display: inline-block;
+            width: 100%;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        a.btn-checkout:hover {
+            text-decoration: none;
+            color: #000;
+        }
     </style>
 </head>
 <body>
@@ -182,9 +194,19 @@
                     <span class="fs-5 fw-bold">Total</span>
                     <span class="fs-4 fw-bold text-primary">$<%= String.format("%.2f", total) %></span>
                 </div>
-                <form action="checkout" method="post">
-                    <button type="submit" class="btn btn-checkout">Proceed to Checkout</button>
-                </form>
+                
+                <% if (user != null) { %>
+                    <form action="checkout" method="post">
+                        <button type="submit" class="btn btn-checkout">Proceed to Checkout</button>
+                    </form>
+                <% } else { %>
+                    <div class="alert alert-info alert-dismissible fade show mb-3" role="alert">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>Sign in required!</strong> You must sign in or create an account to complete your purchase.
+                    </div>
+                    <a href="login" class="btn btn-checkout mb-3" style="display: inline-block; width: 100%; text-decoration: none; text-align: center; cursor: pointer;">Sign In to Checkout</a>
+                    <p class="text-center text-muted small mb-0 mt-3">Don't have an account? <a href="signup" class="text-primary fw-semibold">Sign up here</a></p>
+                <% } %>
                 
                 <div class="mt-4 text-center">
                     <p class="text-muted small mb-0"><i class="bi bi-shield-lock me-1"></i> Secure Checkout Guaranteed</p>
