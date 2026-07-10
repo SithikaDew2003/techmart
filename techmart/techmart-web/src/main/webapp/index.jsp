@@ -19,7 +19,7 @@
             --dark-bg: #0a0a0b;
             --card-bg: #141416;
             --text-main: #ffffff;
-            --text-muted: #a1a1a6;
+            --text-white: #a1a1a6;
             --border-color: rgba(255, 255, 255, 0.1);
         }
 
@@ -47,7 +47,7 @@
 
         .nav-link {
             font-weight: 500;
-            color: var(--text-muted) !important;
+            color: var(--text-white) !important;
             transition: color 0.2s;
         }
 
@@ -83,7 +83,7 @@
 
         .hero-subtitle {
             font-size: 1.25rem;
-            color: var(--text-muted);
+            color: var(--text-white);
             max-width: 600px;
             margin-bottom: 40px;
             line-height: 1.6;
@@ -199,7 +199,7 @@
         }
 
         .footer-link {
-            color: var(--text-muted);
+            color: var(--text-white);
             text-decoration: none;
             display: block;
             margin-bottom: 12px;
@@ -276,7 +276,7 @@
             <div class="d-flex justify-content-between align-items-end mb-4">
                 <div>
                     <h2 class="section-title mb-0">Featured Components</h2>
-                    <p class="text-muted mt-2">Hand-picked gear for maximum performance.</p>
+                    <p class="text-white mt-2">Hand-picked gear for maximum performance.</p>
                 </div>
                 <a href="shop" class="text-primary text-decoration-none fw-bold">View All <i class="bi bi-arrow-right"></i></a>
             </div>
@@ -286,10 +286,11 @@
                     <div class="col-md-6 col-lg-3">
                         <div class="product-card">
                             <div class="product-img-wrapper">
-                                <% if (p.getImagePath() != null) { %>
-                                    <img src="<%= p.getImagePath() %>" alt="<%= p.getName() %>">
+                                <% if (p.getImagePath() != null && !p.getImagePath().isEmpty()) { 
+                                       String imageSrc = p.getImagePath().startsWith("http") ? p.getImagePath() : request.getContextPath() + "/" + p.getImagePath(); %>
+                                    <img src="<%= imageSrc %>" alt="<%= p.getName() %>">
                                 <% } else { %>
-                                    <i class="bi bi-cpu text-muted fs-1"></i>
+                                    <i class="bi bi-cpu text-white fs-1"></i>
                                 <% } %>
                             </div>
                             <div class="product-category">Component</div>
@@ -306,7 +307,7 @@
                     </div>
                 <% } } else { %>
                     <div class="col-12 text-center py-5">
-                        <p class="text-muted">Loading featured products...</p>
+                        <p class="text-white">Loading featured products...</p>
                         <script>window.location.href='home';</script>
                     </div>
                 <% } %>
@@ -320,17 +321,17 @@
                 <div class="col-md-4">
                     <i class="bi bi-truck feature-icon"></i>
                     <h4>Global Shipping</h4>
-                    <p class="text-muted">Fast and secure delivery to over 50 countries worldwide with real-time tracking.</p>
+                    <p class="text-white">Fast and secure delivery to over 50 countries worldwide with real-time tracking.</p>
                 </div>
                 <div class="col-md-4">
                     <i class="bi bi-shield-check feature-icon"></i>
                     <h4>Extended Warranty</h4>
-                    <p class="text-muted">Every component comes with a minimum 2-year warranty and premium support.</p>
+                    <p class="text-white">Every component comes with a minimum 2-year warranty and premium support.</p>
                 </div>
                 <div class="col-md-4">
                     <i class="bi bi-headset feature-icon"></i>
                     <h4>Expert Support</h4>
-                    <p class="text-muted">Our team of PC building experts is available 24/7 to help you with your build.</p>
+                    <p class="text-white">Our team of PC building experts is available 24/7 to help you with your build.</p>
                 </div>
             </div>
         </div>
@@ -342,7 +343,7 @@
         <div class="row g-4">
             <div class="col-lg-4">
                 <a href="home" class="footer-logo">TECHMART</a>
-                <p class="text-muted pe-lg-5">Premium technology components for the next generation of computing. Build better, perform faster.</p>
+                <p class="text-white pe-lg-5">Premium technology components for the next generation of computing. Build better, perform faster.</p>
                 <div class="d-flex gap-3 mt-4">
                     <a href="#" class="text-white fs-5"><i class="bi bi-twitter-x"></i></a>
                     <a href="#" class="text-white fs-5"><i class="bi bi-instagram"></i></a>
@@ -364,7 +365,7 @@
             </div>
             <div class="col-lg-4">
                 <h6 class="fw-bold mb-4">Newsletter</h6>
-                <p class="text-muted mb-4">Get the latest tech news and exclusive offers.</p>
+                <p class="text-white mb-4">Get the latest tech news and exclusive offers.</p>
                 <div class="input-group mb-3">
                     <input type="text" class="form-control bg-dark border-secondary text-white" placeholder="Email address">
                     <button class="btn btn-primary" type="button">Join</button>
@@ -372,11 +373,11 @@
             </div>
         </div>
         <div class="pt-5 mt-5 border-top border-secondary border-opacity-25 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
-            <p class="text-muted small mb-0">&copy; 2026 Techmart Inc. All rights reserved.</p>
+            <p class="text-white small mb-0">&copy; 2026 Techmart Inc. All rights reserved.</p>
             <div class="d-flex gap-4">
-                <a href="#" class="text-muted small text-decoration-none">Privacy Policy</a>
-                <a href="#" class="text-muted small text-decoration-none">Terms of Service</a>
-                <a href="admin-login" class="text-muted small text-decoration-none"><i class="bi bi-shield-lock"></i> Admin</a>
+                <a href="#" class="text-white small text-decoration-none">Privacy Policy</a>
+                <a href="#" class="text-white small text-decoration-none">Terms of Service</a>
+                <a href="admin-login" class="text-white small text-decoration-none"><i class="bi bi-shield-lock"></i> Admin</a>
             </div>
         </div>
     </div>

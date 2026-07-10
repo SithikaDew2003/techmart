@@ -18,7 +18,7 @@
             --dark-bg: #0a0a0b;
             --card-bg: #141416;
             --text-main: #ffffff;
-            --text-muted: #a1a1a6;
+            --text-white: #a1a1a6;
             --border-color: rgba(255, 255, 255, 0.1);
         }
 
@@ -154,17 +154,17 @@
                 <h5 class="fw-bold mb-3">Cardholder Information</h5>
                 
                 <div class="mb-3">
-                    <label class="form-label text-muted small">Full Name</label>
-                    <input type="text" id="cardholderName" class="form-control" placeholder="<%= user.getFirstName() %> <%= user.getLastName() %>" readonly style="background-color: #2a2a2a; border: 1px solid var(--border-color); color: var(--text-muted);">
+                    <label class="form-label text-white small">Full Name</label>
+                    <input type="text" id="cardholderName" class="form-control" placeholder="<%= user.getFirstName() %> <%= user.getLastName() %>" readonly style="background-color: #2a2a2a; border: 1px solid var(--border-color); color: var(--text-white);">
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label text-muted small">Email</label>
-                    <input type="email" id="cardholderEmail" class="form-control" placeholder="<%= user.getEmail() %>" readonly style="background-color: #2a2a2a; border: 1px solid var(--border-color); color: var(--text-muted);">
+                    <label class="form-label text-white small">Email</label>
+                    <input type="email" id="cardholderEmail" class="form-control" placeholder="<%= user.getEmail() %>" readonly style="background-color: #2a2a2a; border: 1px solid var(--border-color); color: var(--text-white);">
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label text-muted small">Card Information</label>
+                    <label class="form-label text-white small">Card Information</label>
                     <div id="card-element" class="StripeElement"></div>
                 </div>
 
@@ -187,11 +187,11 @@
             <h5 class="fw-bold mb-4">Order Summary</h5>
             <div class="order-summary">
                 <div class="d-flex justify-content-between mb-3">
-                    <span class="text-muted">Subtotal</span>
+                    <span class="text-white">Subtotal</span>
                     <span>$<%= String.format("%.2f", totalAmount) %></span>
                 </div>
                 <div class="d-flex justify-content-between mb-3">
-                    <span class="text-muted">Shipping</span>
+                    <span class="text-white">Shipping</span>
                     <span class="text-primary fw-medium">FREE</span>
                 </div>
                 <hr class="border-secondary border-opacity-25 my-3">

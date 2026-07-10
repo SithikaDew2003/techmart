@@ -148,8 +148,9 @@
                 %>
                 <div class="item-row d-flex align-items-center">
                     <div class="product-img-thumb me-4">
-                        <% if (p.getImagePath() != null) { %>
-                            <img src="<%= p.getImagePath() %>" alt="<%= p.getName() %>">
+                        <% if (p.getImagePath() != null && !p.getImagePath().isEmpty()) {
+                               String imageSrc = p.getImagePath().startsWith("http") ? p.getImagePath() : request.getContextPath() + "/" + p.getImagePath(); %>
+                            <img src="<%= imageSrc %>" alt="<%= p.getName() %>">
                         <% } else { %>
                             <i class="bi bi-cpu text-muted fs-3"></i>
                         <% } %>

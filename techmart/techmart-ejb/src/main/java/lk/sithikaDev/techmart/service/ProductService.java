@@ -3,6 +3,7 @@ package lk.sithikaDev.techmart.service;
 import jakarta.ejb.Local;
 import lk.sithikaDev.techmart.entity.Product;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Local
@@ -14,4 +15,5 @@ public interface ProductService {
     void deleteProduct(Integer productId);
     void updateStock(Integer productId, Integer quantity);
     List<Product> searchProducts(String query);
+    List<Product> filterProducts(String query, BigDecimal minPrice, BigDecimal maxPrice, String sortBy);
 }

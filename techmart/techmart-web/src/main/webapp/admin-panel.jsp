@@ -82,7 +82,12 @@
                                     <tr>
                                         <td><%= product.getId() %></td>
                                         <td>
-                                            <img src="<%= product.getImagePath() %>" alt="<%= product.getName() %>" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                                            <% if (product.getImagePath() != null && !product.getImagePath().isEmpty()) {
+                                                   String imageSrc = product.getImagePath().startsWith("http") ? product.getImagePath() : request.getContextPath() + "/" + product.getImagePath(); %>
+                                                <img src="<%= imageSrc %>" alt="<%= product.getName() %>" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                                            <% } else { %>
+                                                <span class="text-muted small">No image</span>
+                                            <% } %>
                                         </td>
                                         <td><%= product.getName() %></td>
                                         <td>$<%= product.getPrice() %></td>

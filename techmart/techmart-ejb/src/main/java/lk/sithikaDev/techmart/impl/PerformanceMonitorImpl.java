@@ -1,66 +1,100 @@
 package lk.sithikaDev.techmart.impl;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.ejb.ConcurrencyManagement;
-import jakarta.ejb.ConcurrencyManagementType;
 import jakarta.ejb.Lock;
 import jakarta.ejb.LockType;
 import jakarta.ejb.Singleton;
-import jakarta.ejb.Startup;
 import lk.sithikaDev.techmart.service.PerformanceMonitor;
 
+import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Singleton
-@Startup
-@ConcurrencyManagement(ConcurrencyManagementType.CONTAINER)
 public class PerformanceMonitorImpl implements PerformanceMonitor {
 
-    private Map<String, AtomicLong> requestCounts;
-    private AtomicLong totalRequests;
-
-    @PostConstruct
-    public void init() {
-        requestCounts = new ConcurrentHashMap<>();
-        totalRequests = new AtomicLong(0);
-        System.out.println("[PERFORMANCE MONITOR] Initialized at startup.");
-    }
+    private final Map<String, Long> requestStatistics = new HashMap<>();
+    private long totalRequests = 0;
+    private long activeSessions = 0;
 
     @Override
     @Lock(LockType.WRITE)
     public void incrementRequestCount(String path) {
-        requestCounts.computeIfAbsent(path, k -> new AtomicLong(0)).incrementAndGet();
-        totalRequests.incrementAndGet();
+        totalRequests++;
+        requestStatistics.put(path, requestStatistics.getOrDefault(path, 0L) + 1);
     }
 
     @Override
     @Lock(LockType.READ)
     public Map<String, Long> getRequestStatistics() {
-        Map<String, Long> stats = new HashMap<>();
-        requestCounts.forEach((k, v) -> stats.put(k, v.get()));
-        return stats;
+        return new HashMap<>(requestStatistics);
     }
 
     @Override
     @Lock(LockType.READ)
     public long getTotalRequests() {
-        return totalRequests.get();
-    }
-
-    @Override
-    @Lock(LockType.WRITE)
-    public void resetStatistics() {
-        requestCounts.clear();
-        totalRequests.set(0);
+        return totalRequests;
     }
 
     @Override
     @Lock(LockType.READ)
     public long getActiveSessions() {
-        // Mock session count for demonstration
-        return totalRequests.get() / 5 + 1; 
+        return activeSessions;
+    }
+
+    @Override
+    @Lock(LockType.WRITE)
+    public void resetStatistics() {
+        requestStatistics.clear();
+        totalRequests = 0;
+    }
+
+    @Override
+    public long getUsedMemory() {
+        Runtime runtime = Runtime.getRuntime();
+        return (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024);
+    }
+
+    @Override
+    public long getFreeMemory() {
+        return Runtime.getRuntime().freeMemory() / (1024 * 1024);
+    }
+
+    @Override
+    public long getMaxMemory() {
+        return Runtime.getRuntime().maxMemory() / (1024 * 1024);
+    }
+
+    @Override
+    public long getUptimeSeconds() {
+        return ManagementFactory.getRuntimeMXBean().getUptime() / 1000;
+    }
+
+    @Override
+    public int getAvailableProcessors() {
+        return Runtime.getRuntime().availableProcessors();
+    }
+
+    @Override
+    public int getActiveThreadCount() {
+        return ManagementFactory.getThreadMXBean().getThreadCount();
+    }
+
+    @Override
+    @Lock(LockType.READ)
+    public String getMostVisitedEndpoint() {
+        return requestStatistics.entrySet()
+                .stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse("No data");
+    }
+
+    @Override
+    @Lock(LockType.READ)
+    public double getAverageRequestsPerEndpoint() {
+        if (requestStatistics.isEmpty()) {
+            return 0;
+        }
+        return (double) totalRequests / requestStatistics.size();
     }
 }

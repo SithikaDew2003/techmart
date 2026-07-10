@@ -5,9 +5,30 @@ import java.util.Map;
 
 @Local
 public interface PerformanceMonitor {
+
     void incrementRequestCount(String path);
+
     Map<String, Long> getRequestStatistics();
+
     long getTotalRequests();
+
     long getActiveSessions();
+
     void resetStatistics();
+
+    long getUsedMemory();
+
+    long getFreeMemory();
+
+    long getMaxMemory();
+
+    long getUptimeSeconds();
+
+    int getAvailableProcessors();
+
+    int getActiveThreadCount();
+
+    String getMostVisitedEndpoint();
+
+    double getAverageRequestsPerEndpoint();
 }
